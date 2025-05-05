@@ -6,7 +6,6 @@ soundfile
 torch
 torchvision
 tensorflow
-ffmpeg
 requests
 sounddevice
 pyaudio
