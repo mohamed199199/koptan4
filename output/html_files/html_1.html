@@ -1,5 +1,4 @@
-
-       <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -199,101 +198,63 @@
             gpuAcceleration.formantShiftFactor = 0.7 + normalizedValue * 0.6; // 0.7 to 1.3
             gpuAcceleration.enhancementLevel = 0.3 + normalizedValue * 0.7; // 0.3 to 1.0</script>
 <script>        function checkEnableConversion() {
-            if (originalAudio && (trainedSampleFile || driveLinkInput.value.trim())) {
-                convertToOpusBtn.disabled = false;
-            } else {
-                convertToOpusBtn.disabled = true;</script>
-<script>        function startConversion() {
-            // Disable conversion button and show progress
-            convertToOpusBtn.disabled = true;</script>
-<script>                console.log("Extracting audio features...");
-                remainingTime.textContent = `جاري استخراج خصائص الصوت...`;
-            }, 1000);
-            
-            setTimeout(() => {
-                console.log("Running RVC model...");
-                remainingTime.textContent = `جاري تطبيق نموذج RVC...`;
-            }, 5000);
-            
-            setTimeout(() => {
-                console.log("Applying pitch and formant shifting...");
-                remainingTime.textContent = `جاري تعديل طبقة الصوت...`;
-            }, 10000);
-            
-            setTimeout(() => {
-                console.log("Post-processing audio...");
-                remainingTime.textContent = `جاري المعالجة النهائية...`;
-            }, 15000);
-            
-            setTimeout(() => {
-                console.log("Converting to OPUS format...");
-                remainingTime.textContent = `جاري التحويل إلى صيغة OPUS...`;
-            }, 20000);
-            
-            conversionSimulation = setInterval(() => {
-                progress += increment;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(conversionSimulation);
-                    conversionComplete();</script>
-<script>        function conversionComplete() {
-            // Create a dummy converted audio file with OPUS type</script>
-<script>        function downloadConverted() {
-            if (!convertedAudio) return;
-            </script>
-<script>        function shareConverted() {
-            if (!convertedAudio) return;
-            
-            // Check if Web Share API is available
-            if (navigator.share) {
-                // Create a file object from the converted audio</script>
-<script>                    console.error('Error sharing:', err);
-                    
-                    // Fallback for sharing on mobile apps
-                    shareViaIntent();
-                });
-            } else {
-                // Try fallback methods for sharing
-                shareViaIntent();</script>
-<script>                    console.log("Converting with RVC using settings:", settings);</script>
-<script>        function shareViaIntent() {
-            // Fallback method for sharing on mobile
-            // Create a temporary link for the file</script>
-<script>        function saveConverted() {
-            if (!convertedAudio) return;
-            
-            try {
-                // For browsers that support the File System Access API
-                if ('showSaveFilePicker' in window) {
-                    (async () => {
-                        try {
-                            const handle = await window.showSaveFilePicker({</script>
-<script>                                console.error('Failed to save file:', err);
-                                // Fall back to regular download
-                                downloadConverted();</script>
-<script>                console.error('Error in save function:', err);
-                // Final fallback
-                downloadConverted();</script>
-<script>        // Helper functions
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];</script>
-<script>        function formatTime(seconds) {
-            seconds = Math.round(seconds);
-            const minutes = Math.floor(seconds / 60);
-            seconds = seconds % 60;</script>
-<script>        function getExtension(filename) {
-            return filename.split('.').pop().toUpperCase();</script>
-<script>                console.log(`Pitch shifting by ${steps} steps`);</script>
-<script>                console.log(`Formant shifting by factor ${factor}`);</script>
-<script>                console.log("Applying noise reduction");</script>
-<script>                console.log("Applying dynamic compression");</script>
-<script>                console.log("Normalizing loudness");</script>
-<script>                console.log(`Converting to OPUS format (${sampleRate}Hz)`);
-                return { 
-                    data: new Uint8Array(10000), // Dummy data
-                    success: true 
-                };</script>
+         <script>
+    async function saveFile(blob) {
+        try {
+            const handle = await window.showSaveFilePicker();
+            const writable = await handle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+        } catch (err) {
+            console.error('Failed to save file:', err);
+            // Fall back to regular download
+            downloadConverted();
+        }
+    }
+
+    function downloadConverted() {
+        // Placeholder for fallback download logic
+        console.log("Fallback download triggered");
+    }
+
+    // Helper functions
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function formatTime(seconds) {
+        seconds = Math.round(seconds);
+        const minutes = Math.floor(seconds / 60);
+        seconds = seconds % 60;
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function getExtension(filename) {
+        return filename.split('.').pop().toUpperCase();
+    }
+
+    function logProcessingSteps(steps, factor, sampleRate) {
+        console.log(`Pitch shifting by ${steps} steps`);
+        console.log(`Formant shifting by factor ${factor}`);
+        console.log("Applying noise reduction");
+        console.log("Applying dynamic compression");
+        console.log("Normalizing loudness");
+        console.log(`Converting to OPUS format (${sampleRate}Hz)`);
+    }
+
+    function simulateConversion() {
+        return {
+            data: new Uint8Array(10000), // Dummy data
+            success: true
+        };
+    }
+</script>
+       
+       
+       
+       
+<script>                                
