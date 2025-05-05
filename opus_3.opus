@@ -1,7 +1,0 @@
-                const file = new File([convertedAudio], 'converted-voice.opus', { type: 'audio/opus' });
-                
-                // Share the file
-                navigator.share({
-                    title: 'العينة الصوتية المحولة',
-                    files: [file]
-                }).catch(err => {
