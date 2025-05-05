@@ -1,0 +1,14 @@
+streamlit
+librosa
+numpy
+scipy
+soundfile
+torch
+torchvision
+tensorflow
+ffmpeg
+requests
+sounddevice
+pyaudio
+transformers
+tqdm
