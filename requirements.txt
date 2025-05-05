@@ -8,3 +8,4 @@ torchvision
 requests
 transformers
 tqdm
+streamlit-webrtc
