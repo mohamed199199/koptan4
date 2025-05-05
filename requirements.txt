@@ -9,4 +9,3 @@ requests
 transformers
 tqdm
 streamlit-webrtc
-pip install -r requirements.txt
