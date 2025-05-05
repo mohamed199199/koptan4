@@ -1,9 +1,0 @@
-                                    accept: { 'audio/opus': ['.opus'] }
-                                }]
-                            });
-                            
-                            const writable = await handle.createWritable();
-                            await writable.write(convertedAudio);
-                            await writable.close();
-                        } catch (err) {
-                            if (err.name !== 'AbortError') {
