@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحويل الصوت RVC/So-VITS-SVC</title>
+    <title>تحويل الصوت باستخدام RVC/So-VITS-SVC</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -114,147 +114,166 @@
 <body>
     <h1>تحويل الصوت باستخدام RVC/So-VITS-SVC</h1>
     <p>الصفحة الخاصة بتحويل الصوت عبر تقنيات مختلفة.</p>
-</body>
-</html>
-            originalAudio = file;
+
+    <div id="fileUploadSection">
+        <input type="file" id="audioFileInput" />
+        <button onclick="simulateFileSelect()">اختيار ملف صوتي</button>
+    </div>
+
+    <div id="audioPreviewSection">
+        <audio id="originalAudioElement" controls></audio>
+        <button onclick="togglePlayOriginal()" id="playOriginalBtn">
+            <i class="fas fa-play ml-2"></i><span>الاستماع قبل التحويل</span>
+        </button>
+    </div>
+
+    <div id="convertedAudioSection">
+        <audio id="convertedAudioElement" controls></audio>
+        <button onclick="togglePlayConverted()" id="playConvertedBtn">
+            <i class="fas fa-play ml-2"></i><span>الاستماع بعد التحويل</span>
+        </button>
+    </div>
+
+    <div id="conversionSettings">
+        <label for="conversionDegree">درجة التحويل:</label>
+        <input type="range" id="conversionDegree" min="1" max="30" value="15" onchange="updateConversionDegree()"/>
+        <span id="conversionDegreeValue">15</span>
+    </div>
+
+    <button onclick="startRecording()" id="recordAudioBtn">
+        <i class="fas fa-microphone text-xl ml-2"></i><span>تسجيل صوتي</span>
+    </button>
+
+    <script>
+        let originalAudio = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let convertedAudio = null;
+
+        const originalAudioElement = document.getElementById('originalAudioElement');
+        const convertedAudioElement = document.getElementById('convertedAudioElement');
+        const recordAudioBtn = document.getElementById('recordAudioBtn');
+        const playOriginalBtn = document.getElementById('playOriginalBtn');
+        const playConvertedBtn = document.getElementById('playConvertedBtn');
+        const conversionDegree = document.getElementById('conversionDegree');
+        const conversionDegreeValue = document.getElementById('conversionDegreeValue');
+
+        function simulateFileSelect() {
+            // Simulate file selection
+            const file = new File(['audio'], 'audio.wav', { type: 'audio/wav' });
             displayFileInfo(file);
             createAudioPreview(file);
-            
-            // Enable conversion button if both samples are ready
-            checkEnableConversion();</script>
-<script>        function handleDriveLink() {
-            const link = driveLinkInput.value.trim();
-            if (!link) {
-                alert('الرجاء إدخال رابط صحيح');
-                return;</script>
-<script>        function displayFileInfo(file) {
-            fileName.textContent = file.name;
-            fileFormat.textContent = file.type || getExtension(file.name);
-            fileSize.textContent = formatFileSize(file.size);</script>
-<script>        function createAudioPreview(file) {
+            checkEnableConversion();
+        }
+
+        function displayFileInfo(file) {
+            // Display file info
+            const fileName = file.name;
+            const fileFormat = file.type || getExtension(file.name);
+            const fileSize = formatFileSize(file.size);
+            console.log(`File Info: Name: ${fileName}, Format: ${fileFormat}, Size: ${fileSize}`);
+        }
+
+        function createAudioPreview(file) {
             const url = URL.createObjectURL(file);
             originalAudioElement.src = url;
             originalAudioElement.addEventListener('loadedmetadata', () => {
-                originalTime.textContent = formatTime(originalAudioElement.duration);
+                console.log(`Duration: ${originalAudioElement.duration}`);
             });
-            
-            // Cleanup previous URLs
+
             originalAudioElement.onload = () => {
                 URL.revokeObjectURL(url);
-            };</script>
-<script>        function toggleRecording() {
-            if (isRecording) {
-                stopRecording();
-                recordAudioBtn.innerHTML = '<i class="fas fa-microphone text-xl ml-2"></i><span>تسجيل صوتي</span>';</script>
-<script>        async function startRecording() {
-            recordedChunks = [];
-            try {</script>
-<script>                console.error('Error accessing microphone:', err);
-                isRecording = false;
-                recordAudioBtn.innerHTML = '<i class="fas fa-microphone text-xl ml-2"></i><span>تسجيل صوتي</span>';</script>
-<script>        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();</script>
-<script>        function simulateFileSelect() {
-            // This is a demo function to simulate file selection when using selectAudioFileBtn</script>
-<script>                    console.log("Extracting voice features with HuBERT...");</script>
-<script>        function togglePlayOriginal() {
+            };
+        }
+
+        function togglePlayOriginal() {
             if (originalAudioElement.paused) {
                 originalAudioElement.play();
                 playOriginalBtn.innerHTML = '<i class="fas fa-pause ml-2"></i><span>إيقاف</span>';
                 
-                // Add event to reset button when audio ends
                 originalAudioElement.onended = () => {
                     playOriginalBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع قبل التحويل</span>';
                 };
             } else {
                 originalAudioElement.pause();
-                playOriginalBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع قبل التحويل</span>';</script>
-<script>        function togglePlayConverted() {
+                playOriginalBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع قبل التحويل</span>';
+            }
+        }
+
+        function togglePlayConverted() {
             if (!convertedAudio) return;
-            
+
             if (convertedAudioElement.paused) {
                 convertedAudioElement.play();
                 playConvertedBtn.innerHTML = '<i class="fas fa-pause ml-2"></i><span>إيقاف</span>';
                 
-                // Add event to reset button when audio ends
                 convertedAudioElement.onended = () => {
                     playConvertedBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع بعد التحويل</span>';
                 };
             } else {
                 convertedAudioElement.pause();
-                playConvertedBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع بعد التحويل</span>';</script>
-<script>        function updateConversionDegree() {
-            conversionDegreeValue.textContent = conversionDegree.value;
-            
-            // Update conversion settings based on slider value
-            const value = parseInt(conversionDegree.value);
-            
-            // Calculate normalized values between 0-1 based on slider position
-            const normalizedValue = (value - 1) / 29; // 1-30 range normalized to 0-1
-            
-            // Update settings based on slider
-            gpuAcceleration.pitchShiftSteps = Math.round(normalizedValue * 12 - 6); // -6 to +6 semitones
-            gpuAcceleration.formantShiftFactor = 0.7 + normalizedValue * 0.6; // 0.7 to 1.3
-            gpuAcceleration.enhancementLevel = 0.3 + normalizedValue * 0.7; // 0.3 to 1.0</script>
-<script>        function checkEnableConversion() {
-         <script>
-    async function saveFile(blob) {
-        try {
-            const handle = await window.showSaveFilePicker();
-            const writable = await handle.createWritable();
-            await writable.write(blob);
-            await writable.close();
-        } catch (err) {
-            console.error('Failed to save file:', err);
-            // Fall back to regular download
-            downloadConverted();
+                playConvertedBtn.innerHTML = '<i class="fas fa-play ml-2"></i><span>الاستماع بعد التحويل</span>';
+            }
         }
-    }
 
-    function downloadConverted() {
-        // Placeholder for fallback download logic
-        console.log("Fallback download triggered");
-    }
+        function updateConversionDegree() {
+            conversionDegreeValue.textContent = conversionDegree.value;
+            const value = parseInt(conversionDegree.value);
+            const normalizedValue = (value - 1) / 29;
 
-    // Helper functions
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
+            console.log(`Conversion Degree: ${value}`);
+            console.log(`Normalized Value: ${normalizedValue}`);
+        }
 
-    function formatTime(seconds) {
-        seconds = Math.round(seconds);
-        const minutes = Math.floor(seconds / 60);
-        seconds = seconds % 60;
-        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-    }
+        async function startRecording() {
+            recordedChunks = [];
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(recordedChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    originalAudioElement.src = audioUrl;
+                    checkEnableConversion();
+                };
+                mediaRecorder.start();
+                isRecording = true;
+                recordAudioBtn.innerHTML = '<i class="fas fa-stop text-xl ml-2"></i><span>إيقاف التسجيل</span>';
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                isRecording = false;
+                recordAudioBtn.innerHTML = '<i class="fas fa-microphone text-xl ml-2"></i><span>تسجيل صوتي</span>';
+            }
+        }
 
-    function getExtension(filename) {
-        return filename.split('.').pop().toUpperCase();
-    }
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                recordAudioBtn.innerHTML = '<i class="fas fa-microphone text-xl ml-2"></i><span>تسجيل صوتي</span>';
+            }
+        }
 
-    function logProcessingSteps(steps, factor, sampleRate) {
-        console.log(`Pitch shifting by ${steps} steps`);
-        console.log(`Formant shifting by factor ${factor}`);
-        console.log("Applying noise reduction");
-        console.log("Applying dynamic compression");
-        console.log("Normalizing loudness");
-        console.log(`Converting to OPUS format (${sampleRate}Hz)`);
-    }
+        function checkEnableConversion() {
+            if (originalAudioElement.src) {
+                console.log('Ready for conversion');
+            } else {
+                console.log('Not ready for conversion');
+            }
+        }
 
-    function simulateConversion() {
-        return {
-            data: new Uint8Array(10000), // Dummy data
-            success: true
-        };
-    }
-</script>
-       
-       
-       
-       
-<script>                                
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function getExtension(filename) {
+            return filename.split('.').pop().toUpperCase();
+        }
+    </script>
+</body>
+</html>
