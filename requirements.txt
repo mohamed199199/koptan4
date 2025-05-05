@@ -5,9 +5,6 @@ scipy
 soundfile
 torch
 torchvision
-tensorflow
 requests
-sounddevice
-pyaudio
 transformers
 tqdm
